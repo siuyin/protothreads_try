@@ -7,7 +7,6 @@
 
 #include "proto_delay.h"
 
-#define INTVL_MS 500 
 volatile static uint32_t bl_start_tick;
 static uint8_t pr_start;
 static int blink_led(struct pt *pt) {
@@ -16,9 +15,9 @@ static int blink_led(struct pt *pt) {
 		PT_WAIT_UNTIL(pt,pr_start == 0);
 
 		funDigitalWrite(LED, FUN_HIGH);
-		DELAY(bl_start_tick, INTVL_MS);
+		DELAY(bl_start_tick, 50);
 		funDigitalWrite(LED, FUN_LOW);
-		DELAY(bl_start_tick, INTVL_MS);
+		DELAY(bl_start_tick, 950);
 
 		pr_start=1;
 	}
