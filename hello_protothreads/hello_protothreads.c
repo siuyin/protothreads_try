@@ -6,10 +6,11 @@
 
 static struct pt pt_ti, pt_to;
 
+static uint8_t n = 0;
 volatile uint32_t tick_start;
 static int tick(struct pt *pt) {
 	PT_BEGIN(pt);
-	printf("\ttick\n");
+	printf("\ttick: %d\n",n++);
 	DELAY(tick_start,50);
 	PT_END(pt);
 }
@@ -41,12 +42,11 @@ static int blink_led(struct pt *pt) {
 
 volatile uint32_t pr_start_tick;
 static int prnt(struct pt *pt) {
-static uint8_t n = 0;
 	PT_BEGIN(pt);
 	while(1) {
 		PT_WAIT_UNTIL(pt, pr_start == 1); 
 
-		printf("%d\n",n++);
+		printf("\n---");
 
 		pr_start = 0;
 	}
