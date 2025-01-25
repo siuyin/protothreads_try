@@ -2,22 +2,37 @@
 #include "pt.h"
 #include <stdio.h>
 
-// use defines to make more meaningful names for our GPIO pins
-#define LED PD0
-
 #include "proto_delay.h"
 
-volatile static uint32_t bl_start_tick;
+static struct pt pt_ti, pt_to;
+
+volatile uint32_t tick_start;
+static int tick(struct pt *pt) {
+	PT_BEGIN(pt);
+	printf("\ttick\n");
+	DELAY(tick_start,500);
+	PT_END(pt);
+}
+
+volatile uint32_t tock_start;
+static int tock(struct pt *pt) {
+	PT_BEGIN(pt);
+	printf("\ttock\n");
+	DELAY(tock_start,500);
+	PT_END(pt);
+}
+
+#define LED PD0
 static uint8_t pr_start;
 static int blink_led(struct pt *pt) {
 	PT_BEGIN(pt);
 	while(1) {
 		PT_WAIT_UNTIL(pt,pr_start == 0);
-
 		funDigitalWrite(LED, FUN_HIGH);
-		DELAY(bl_start_tick, 50);
+		PT_SPAWN(pt, &pt_ti, tick(&pt_ti));
+
 		funDigitalWrite(LED, FUN_LOW);
-		DELAY(bl_start_tick, 950);
+		PT_SPAWN(pt, &pt_to, tock(&pt_to));
 
 		pr_start=1;
 	}
