@@ -10,15 +10,15 @@ volatile uint32_t tick_start;
 static int tick(struct pt *pt) {
 	PT_BEGIN(pt);
 	printf("\ttick\n");
-	DELAY(tick_start,500);
+	DELAY(tick_start,50);
 	PT_END(pt);
 }
 
 volatile uint32_t tock_start;
 static int tock(struct pt *pt) {
 	PT_BEGIN(pt);
-	printf("\ttock\n");
-	DELAY(tock_start,500);
+	printf("tock\n");
+	DELAY(tock_start,950);
 	PT_END(pt);
 }
 
