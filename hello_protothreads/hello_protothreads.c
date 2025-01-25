@@ -5,19 +5,26 @@
 // use defines to make more meaningful names for our GPIO pins
 #define PIN_1 PD0
 
-volatile uint32_t bl_start_tick;
-static uint32_t bl_on_ticks = Ticks_from_Ms(250);
-static uint32_t bl_off_ticks = Ticks_from_Ms(500);
+
+#define INTVL_MS 125
+#define DELAY(dly) {\
+	bl_start_tick = SysTick->CNT;\
+	PT_WAIT_UNTIL(pt, SysTick->CNT - bl_start_tick >= Ticks_from_Ms(dly));\
+}
 
 static int blink_led(struct pt *pt) {
+	volatile static uint32_t bl_start_tick;
+	//static uint32_t bl_ticks = Ticks_from_Ms(INTVL_MS);
 	PT_BEGIN(pt);
 	while(1) {
-		bl_start_tick = SysTick->CNT;
+		// bl_start_tick = SysTick->CNT;
 		funDigitalWrite(PIN_1, FUN_HIGH);
-		PT_WAIT_UNTIL(pt, SysTick->CNT - bl_start_tick >= bl_on_ticks);
+		// PT_WAIT_UNTIL(pt, SysTick->CNT - bl_start_tick >= bl_ticks);
+		DELAY(INTVL_MS);
 		funDigitalWrite(PIN_1, FUN_LOW);
-		bl_start_tick = SysTick->CNT;
-		PT_WAIT_UNTIL(pt, SysTick->CNT - bl_start_tick >= bl_off_ticks);
+		//bl_start_tick = SysTick->CNT;
+		//PT_WAIT_UNTIL(pt, SysTick->CNT - bl_start_tick >= bl_ticks);
+		DELAY(INTVL_MS);
 	}
 	PT_END(pt);
 }
@@ -48,6 +55,7 @@ int main()
 	
 	funPinMode( PIN_1,     GPIO_Speed_10MHz | GPIO_CNF_OUT_PP );
 
+#define DELAY_TIME 250
 	while(1)
 	{
 		blink_led(&pt_bl);
