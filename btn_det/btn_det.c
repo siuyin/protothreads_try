@@ -79,7 +79,8 @@ static int btn_det(struct pt *pt) {
 		if (next_check_tick > SysTick->CNT) {
 			continue;
 		}
-		// FIXME: printf("dblclick state=%d\n",dblclick_state); printf is unreliable here
+		// IMPORTANT: switch cannot be used in a protothread. Thus this long series of if, else if statements.
+		//printf("dblclick state=%d\n",dblclick_state); 
 		if (dblclick_state == DCSReleased) {
 			if (btn_pushed()){
 				dblclick_state = DCSCandPushed;
