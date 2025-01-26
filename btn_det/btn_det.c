@@ -80,7 +80,7 @@ static int btn_det(struct pt *pt) {
 			continue;
 		}
 		// IMPORTANT: switch cannot be used in a protothread. Thus this long series of if, else if statements.
-		//printf("dblclick state=%d\n",dblclick_state); 
+		printf("dblclick state=%d\n",dblclick_state); 
 		if (dblclick_state == DCSReleased) {
 			if (btn_pushed()){
 				dblclick_state = DCSCandPushed;
