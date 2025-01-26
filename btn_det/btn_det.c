@@ -2,6 +2,10 @@
 #include "pt.h"
 #include <stdio.h>
 
+#define SSD1306_128X32
+#include "ssd1306_i2c.h"
+#include "ssd1306.h"
+
 #include "proto_delay.h"
 
 #define BTN PD2
@@ -9,10 +13,17 @@
 
 #define btn_pushed() ( funDigitalRead(BTN) == 0 ? 1 : 0 )
 
+void write_str(char* s) {
+	ssd1306_setbuf(0);
+	ssd1306_drawstr(0,0, s, 1);
+	ssd1306_refresh();
+}
+
 static struct pt pt_bl;
 volatile uint32_t bl_start;
 static int blink_led(struct pt *pt){
 	PT_BEGIN(pt);
+	write_str("Single Clicked");
 
 	funDigitalWrite(LED,FUN_HIGH);
 	DELAY(bl_start, 50);
@@ -25,6 +36,7 @@ static struct pt pt_dbl;
 volatile uint32_t dbl_start;
 static int double_blink_led(struct pt *pt) {
 	PT_BEGIN(pt);
+	write_str("Double Clicked");
 
 	funDigitalWrite(LED,FUN_HIGH);
 	DELAY(dbl_start,125);
@@ -41,6 +53,7 @@ static struct pt pt_lb;
 volatile uint32_t lb_start;
 static int long_blink_led(struct pt *pt) {
 	PT_BEGIN(pt);
+	write_str("Long Clicked");
 
 	funDigitalWrite(LED,FUN_HIGH);
 	DELAY(lb_start, 500);
@@ -80,7 +93,7 @@ static int btn_det(struct pt *pt) {
 			continue;
 		}
 		// IMPORTANT: switch cannot be used in a protothread. Thus this long series of if, else if statements.
-		printf("dblclick state=%d\n",dblclick_state); 
+		//printf("dblclick state=%d\n",dblclick_state); 
 		if (dblclick_state == DCSReleased) {
 			if (btn_pushed()){
 				dblclick_state = DCSCandPushed;
@@ -166,10 +179,19 @@ static int btn_det(struct pt *pt) {
 	PT_END(pt);
 }
 
+void init_i2c() {
+ 	if(ssd1306_i2c_init()!=0) {
+ 		while(1){}
+ 	}
+ 
+ 	ssd1306_init();
+}
+
+
 static struct pt pt_bt;
 int main() {
 	SystemInit();
-	//PT_INIT(&pt_blm);
+	init_i2c();
 	PT_INIT(&pt_bt);
 
 	// Enable GPIOs
@@ -178,6 +200,8 @@ int main() {
 	funDigitalWrite(BTN, FUN_HIGH ); // pull-up
 	funPinMode(LED, GPIO_Speed_10MHz|GPIO_CNF_OUT_PP);	
 	
+	write_str("Btn Clk Det");
+
 	while(1) {
 		next_check_tick = SysTick->CNT;
 		btn_det(&pt_bt);
