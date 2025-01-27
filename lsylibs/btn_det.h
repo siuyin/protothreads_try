@@ -78,8 +78,9 @@ typedef enum {
 const uint32_t long_click_max_interval = Ticks_from_Ms(500);
 const uint32_t double_click_max_interval = Ticks_from_Ms(150); // tune this value to properly detect a double-click
 volatile uint32_t interval_timer_start_tick;
-volatile uint32_t next_check_tick;
-const uint32_t check_intvl = Ticks_from_Ms(20);
+//volatile uint32_t next_check_tick;
+volatile uint32_t btn_det_start;
+//const uint32_t check_intvl = Ticks_from_Ms(20);
 BtnState_Typedef dblclick_state = BSReleased;
 // statemachine markdown:
 // [![](https://mermaid.ink/img/pako:eNqVVFtvgjAU_ivNeVyEVcDByOaLbk8uWbY9TXyoUIWIYEpZ5oz_faVehrQy9clz-C7nlm4gzCMKPhSccDpMyJyRpfFlBRkSv_HNBBlGH73RlJKCRrvsIZKfBiSLzNeyiEXso_GUZ2glo4kGfAz2SLaP99i6VgVvka2hJGuUZ_NBmoQLBY9ukeiNccSTJWU1ozql0qnFHxVU66tlyuRzwgreKKHRn-LQsK1oskrUR6lIo7DKIx4zWphVIzI5TZNsgUZPwxbRZplH4YdHRVktTleXMgntEA4Lvmy_J5S2m7jq4lTGPxbNii7YpIprZav1KdxWU90N692H0zRsHpPYebRPH27pnIR6h3rmGZLa67kDaZtrrYeKd9qSfpwNygUbvM6kgW5vBTogZrckSSTe1U0lEACP6ZIG4Iu_EZ2RMuUBBNlWQEnJ8_d1FoLPWUk7wPJyHoM_I2khonIV_b3LB8iKZJ95fgxplPCcvezecfmcSwj4G_gGv4tN2_Ww5biO5d7Zdq_bgTX4hm3bJsYW7t1h13Nw19524EeqWqbjuJ6HXce5tx3sWdtf5aP94A?type=png)](https://mermaid.live/edit#pako:eNqVVFtvgjAU_ivNeVyEVcDByOaLbk8uWbY9TXyoUIWIYEpZ5oz_faVehrQy9clz-C7nlm4gzCMKPhSccDpMyJyRpfFlBRkSv_HNBBlGH73RlJKCRrvsIZKfBiSLzNeyiEXso_GUZ2glo4kGfAz2SLaP99i6VgVvka2hJGuUZ_NBmoQLBY9ukeiNccSTJWU1ozql0qnFHxVU66tlyuRzwgreKKHRn-LQsK1oskrUR6lIo7DKIx4zWphVIzI5TZNsgUZPwxbRZplH4YdHRVktTleXMgntEA4Lvmy_J5S2m7jq4lTGPxbNii7YpIprZav1KdxWU90N692H0zRsHpPYebRPH27pnIR6h3rmGZLa67kDaZtrrYeKd9qSfpwNygUbvM6kgW5vBTogZrckSSTe1U0lEACP6ZIG4Iu_EZ2RMuUBBNlWQEnJ8_d1FoLPWUk7wPJyHoM_I2khonIV_b3LB8iKZJ95fgxplPCcvezecfmcSwj4G_gGv4tN2_Ww5biO5d7Zdq_bgTX4hm3bJsYW7t1h13Nw19524EeqWqbjuJ6HXce5tx3sWdtf5aP94A)
@@ -87,9 +88,9 @@ BtnState_Typedef dblclick_state = BSReleased;
 static int btn_det(struct pt *pt) {
 	PT_BEGIN(pt);
 	while (1) {
-		if (next_check_tick > SysTick->CNT) {
-			continue;
-		}
+		// if (next_check_tick > SysTick->CNT) {
+		// 	continue;
+		// }
 		// IMPORTANT: switch cannot be used in a protothread. Thus this long series of if, else if statements.
 		//printf("dblclick state=%d\n",dblclick_state); 
 		if (dblclick_state == BSReleased) {
@@ -173,7 +174,8 @@ static int btn_det(struct pt *pt) {
 				dblclick_state = BSReleased;
 			}
 		}
-		next_check_tick = SysTick->CNT + check_intvl;
+		//next_check_tick = SysTick->CNT + check_intvl;
+		DELAY(btn_det_start,20);
 	}
 	PT_END(pt);
 }

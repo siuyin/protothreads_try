@@ -91,7 +91,7 @@ int main() {
 	printf("Entering main loop\n");
 
 	while(1) {
-		next_check_tick = SysTick->CNT;
+		//next_check_tick = SysTick->CNT;
 		btn_det(&pt_bt);
 	}
 }
