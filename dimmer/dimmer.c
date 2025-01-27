@@ -25,7 +25,8 @@ static int single_click_action(struct pt *pt){
 static int double_click_action(struct pt *pt) {
 	PT_BEGIN(pt);
 	printf("Double Clicked\n");
-	pulseWidth(127);
+	if (currentWidth() > 0) pulseWidth(0);
+	else pulseWidth(128);
 	PT_END(pt);
 }
 
@@ -44,7 +45,7 @@ static int long_click_action(struct pt *pt) {
 	} else if (currentWidth() <= 1){
 		lca_dir = 1;
 	}
-	DELAY(lca_start,300);
+	DELAY(lca_start,500);
 	PT_END(pt)
 }
 
