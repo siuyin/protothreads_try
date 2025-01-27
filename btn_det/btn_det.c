@@ -50,13 +50,11 @@ static int double_click_action(struct pt *pt) {
 volatile uint32_t lca_start;
 static int long_click_action(struct pt *pt) {
 	PT_BEGIN(pt);
-	write_str("Long Clicked");
-
-	funDigitalWrite(LED,FUN_HIGH);
-	DELAY(lca_start, 500);
-	funDigitalWrite(LED,FUN_LOW);
-
-	PT_END(pt)
+		write_str("Long Clicked");
+		funDigitalWrite(LED,FUN_HIGH);
+		DELAY(lca_start, 500);
+		funDigitalWrite(LED,FUN_LOW);
+	PT_END(pt);
 }
 
 
@@ -84,8 +82,6 @@ int main() {
 	write_str("Btn Clk Det");
 
 	while(1) {
-		next_check_tick = SysTick->CNT;
 		btn_det(&pt_bt);
-		//blink(&pt_blm);
 	}
 }
