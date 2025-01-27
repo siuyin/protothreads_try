@@ -75,8 +75,8 @@ int main() {
 	init_i2c();
 	PT_INIT(&pt_bt);
 
-	// Enable GPIOs
-	funGpioInitAll();
+	// Enable GPIO D
+	funGpioInitD();
 	funPinMode(BTN, GPIO_CNF_IN_PUPD);	
 	funDigitalWrite(BTN, FUN_HIGH ); // pull-up
 	funPinMode(LED, GPIO_Speed_10MHz|GPIO_CNF_OUT_PP);	
