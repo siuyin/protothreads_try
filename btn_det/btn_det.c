@@ -19,38 +19,41 @@ void write_str(char* s) {
 	ssd1306_refresh();
 }
 
+volatile uint32_t sca_start;
 static int single_click_action(struct pt *pt){
 	PT_BEGIN(pt);
 	write_str("Single Clicked");
 
 	funDigitalWrite(LED,FUN_HIGH);
-	DELAY(bl_start, 50);
+	DELAY(sca_start, 50);
 	funDigitalWrite(LED,FUN_LOW);
 
 	PT_END(pt);
 }
 
+volatile uint32_t dca_start;
 static int double_click_action(struct pt *pt) {
 	PT_BEGIN(pt);
 	write_str("Double Clicked");
 
 	funDigitalWrite(LED,FUN_HIGH);
-	DELAY(dbl_start,125);
+	DELAY(dca_start,125);
 	funDigitalWrite(LED,FUN_LOW);
-	DELAY(dbl_start,125);
+	DELAY(dca_start,125);
 	funDigitalWrite(LED,FUN_HIGH);
-	DELAY(dbl_start,125);
+	DELAY(dca_start,125);
 	funDigitalWrite(LED,FUN_LOW);
 
 	PT_END(pt);
 }
 
+volatile uint32_t lca_start;
 static int long_click_action(struct pt *pt) {
 	PT_BEGIN(pt);
 	write_str("Long Clicked");
 
 	funDigitalWrite(LED,FUN_HIGH);
-	DELAY(lb_start, 500);
+	DELAY(lca_start, 500);
 	funDigitalWrite(LED,FUN_LOW);
 
 	PT_END(pt)
