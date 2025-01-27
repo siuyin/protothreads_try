@@ -10,8 +10,8 @@
 
 #define pulseWidth(n) ( TIM1->CH1CVR = n ) 
 #define currentWidth() ( TIM1->CH1CVR ) 
-#define decrPWM() ( TIM1->CH1CVR = TIM1->CH1CVR >> 1 );
-#define incrPWM() ( TIM1->CH1CVR = TIM1->CH1CVR << 1 );
+#define decrPWM() ( TIM1->CH1CVR = (TIM1->CH1CVR >> 1) );
+#define incrPWM() ( TIM1->CH1CVR = (TIM1->CH1CVR << 1) );
 
 //volatile uint32_t sca_start;
 static int single_click_action(struct pt *pt){
@@ -39,7 +39,7 @@ static int long_click_action(struct pt *pt) {
 	} else {
 		decrPWM();
 	}
-	if (currentWidth()>=256) {
+	if (currentWidth()>=511) {
 		lca_dir= -1;
 	} else if (currentWidth() <= 1){
 		lca_dir = 1;
@@ -60,11 +60,6 @@ static int long_click_action(struct pt *pt) {
 	RCC->APB2PRSTR |= RCC_APB2Periph_TIM1; \
 	RCC->APB2PRSTR &= ~RCC_APB2Periph_TIM1; \
 }
-#define initTIM1() { \
-	enableTIM1(); \
-	configTIM1(); \
-	resetTIM1(); \
-}
 #define setTIM1PrescalePeriod() { \
 	TIM1->PSC = 0x0000; \
 	TIM1->ATRLR = 255; \
@@ -78,6 +73,13 @@ static int long_click_action(struct pt *pt) {
 	TIM1->BDTR |= TIM_MOE; \
 	TIM1->CTLR1 |= TIM_CEN; \
 }
+#define initTIM1() { \
+	enableTIM1(); \
+	configTIM1(); \
+	resetTIM1(); \
+	setTIM1PrescalePeriod(); \
+	enableTIM1Output(); \
+}
 static struct pt pt_bt;
 int main() {
 	SystemInit();
@@ -85,14 +87,6 @@ int main() {
 
 	initBTN();
 	initTIM1();	
-
-	setTIM1PrescalePeriod();
-	
-	// Enable CH1N output, positive pol
-	//TIM1->CCER |= TIM_CC1NE | TIM_CC1NP;
-	// Enable CH1N output, negative pol
-	enableTIM1Output();
-
 	printf("Entering main loop\n");
 
 	while(1) {
