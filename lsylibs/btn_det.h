@@ -44,7 +44,10 @@
 // 
 // 	PT_END(pt)
 // }
-
+//
+// In your main function do this:
+//		next_check_tick = SysTick->CNT;
+//		btn_det(&pt_bt);
 
 #define btn_pushed() ( funDigitalRead(BTN) == 0 ? 1 : 0 )
 
@@ -125,6 +128,7 @@ static int btn_det(struct pt *pt) {
 		} else if (dblclick_state == BSLongClicked) {
 			if (btn_pushed()) {
 				dblclick_state = BSLongClicked;
+				PT_SPAWN(pt,&pt_btn_lca,long_click_action(&pt_btn_lca));
 			} else {
 				dblclick_state = BSCandReleased;
 			}
