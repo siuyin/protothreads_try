@@ -14,7 +14,7 @@
 #define incrPWM() ( TIM1->CH1CVR = (TIM1->CH1CVR << 1) );
 
 int8_t dim_mode = 0; // 0 = off, 1 = on incr, 2 = on decr
-int8_t dim_curr_lvl = 0;
+int8_t dim_curr_lvl = 4;
 void dimLvl(uint8_t n) {
 	switch(n) {
 		case 0: pulseWidth(0);
@@ -37,7 +37,6 @@ void dimLvl(uint8_t n) {
 			break;
 	}
 }
-//volatile uint32_t sca_start;
 static int single_click_action(struct pt *pt){
 	PT_BEGIN(pt);
 	if (dim_curr_lvl >= 8) {
@@ -54,7 +53,6 @@ static int single_click_action(struct pt *pt){
 	PT_END(pt);
 }
 
-//volatile uint32_t dca_start;
 static int double_click_action(struct pt *pt) {
 	PT_BEGIN(pt);
 	if (dim_mode == 1) dim_mode = 2;
@@ -95,7 +93,8 @@ static int long_click_action(struct pt *pt) {
 	TIM1->CCER |= TIM_CC1NE;  \
 	TIM1->CCER &=  ~TIM_CC1NP; \
 	TIM1->CHCTLR1 |= TIM_OC1M_2 | TIM_OC1M_1; \
-	TIM1->CH1CVR = 127; \
+	dimLvl(4); \
+	dim_mode = 1; \
 	TIM1->BDTR |= TIM_MOE; \
 	TIM1->CTLR1 |= TIM_CEN; \
 }
