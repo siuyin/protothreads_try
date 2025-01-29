@@ -13,39 +13,64 @@
 #define decrPWM() ( TIM1->CH1CVR = (TIM1->CH1CVR >> 1) );
 #define incrPWM() ( TIM1->CH1CVR = (TIM1->CH1CVR << 1) );
 
+int8_t dim_mode = 0; // 0 = off, 1 = on incr, 2 = on decr
+int8_t dim_curr_lvl = 0;
+void dimLvl(uint8_t n) {
+	switch(n) {
+		case 0: pulseWidth(0);
+			break;
+		case 1: pulseWidth(1);
+			break;
+		case 2: pulseWidth(3);
+			break;
+		case 3: pulseWidth(7);
+			break;
+		case 4: pulseWidth(15);
+			break;
+		case 5: pulseWidth(31);
+			break;
+		case 6: pulseWidth(63);
+			break;
+		case 7: pulseWidth(127);
+			break;
+		case 8: pulseWidth(255);
+			break;
+	}
+}
 //volatile uint32_t sca_start;
 static int single_click_action(struct pt *pt){
 	PT_BEGIN(pt);
-	printf("Single Clicked\n");
-	pulseWidth(63);
+	if (dim_curr_lvl >= 8) {
+		dim_mode = 2;
+		dimLvl(--dim_curr_lvl);
+	} else if (dim_curr_lvl == 0) {
+		dim_mode = 1;
+		dimLvl(++dim_curr_lvl);
+	} else if (dim_mode ==1) {
+		dimLvl(++dim_curr_lvl);
+	} else if (dim_mode == 2) {
+		dimLvl(--dim_curr_lvl);
+	}
 	PT_END(pt);
 }
 
 //volatile uint32_t dca_start;
 static int double_click_action(struct pt *pt) {
 	PT_BEGIN(pt);
-	printf("Double Clicked\n");
-	if (currentWidth() > 0) pulseWidth(0);
-	else pulseWidth(128);
+	if (dim_mode == 1) dim_mode = 2;
+	else if (dim_mode == 2) dim_mode = 1;
 	PT_END(pt);
 }
 
-volatile uint32_t lca_start;
-int8_t lca_dir = 1;
 static int long_click_action(struct pt *pt) {
 	PT_BEGIN(pt);
-	printf("Long Clicked: %lu\n",currentWidth());
-	if (lca_dir == 1) {
-		incrPWM();
-	} else {
-		decrPWM();
+	if (dim_mode == 0) {
+		dim_mode = 1;
+		dimLvl(dim_curr_lvl);
+	} else { 
+		dim_mode = 0;
+		dimLvl(0);
 	}
-	if (currentWidth()>=511) {
-		lca_dir= -1;
-	} else if (currentWidth() <= 1){
-		lca_dir = 1;
-	}
-	DELAY(lca_start,500);
 	PT_END(pt)
 }
 

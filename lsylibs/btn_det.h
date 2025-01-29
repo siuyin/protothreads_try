@@ -129,7 +129,7 @@ static int btn_det(struct pt *pt) {
 		} else if (dblclick_state == BSLongClicked) {
 			if (btn_pushed()) {
 				dblclick_state = BSLongClicked;
-				PT_SPAWN(pt,&pt_btn_lca,long_click_action(&pt_btn_lca));
+				//PT_SPAWN(pt,&pt_btn_lca,long_click_action(&pt_btn_lca));
 			} else {
 				dblclick_state = BSCandReleased;
 			}
