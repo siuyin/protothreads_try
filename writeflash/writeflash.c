@@ -23,19 +23,22 @@
 	while( FLASH->STATR & FLASH_STATR_BSY ); \
 }
 
+#define waitForFlashNotBusy()  while( FLASH->STATR & FLASH_STATR_BSY )
+
 #define clearFlashBuffer(ptr) { \
 	FLASH->CTLR = CR_PAGE_PG; \
 	FLASH->CTLR = CR_BUF_RST | CR_PAGE_PG; \
 	FLASH->ADDR = (intptr_t)ptr; \
+	waitForFlashNotBusy(); \
 }
 
-#define waitForFlashNotBusy()  while( FLASH->STATR & FLASH_STATR_BSY )
 
 #define writeFlash32bits(ptr,val) { \
-	*ptr = val; \
+	*(ptr) = val; \
 	FLASH->CTLR = CR_PAGE_PG | FLASH_CTLR_BUF_LOAD; \
-	waitForFlashNotBusy();
+	waitForFlashNotBusy(); \
 }
+#define flushFlashBuffer() FLASH->CTLR = CR_PAGE_PG|CR_STRT_Set
 
 int main() {
 	SystemInit();
@@ -51,8 +54,11 @@ int main() {
 	erase64BytePage(ptr);
 
 	clearFlashBuffer(ptr);
-	waitForFlashNotBusy();
+	writeFlash32bits(ptr,0xdeadbeef);
+	writeFlash32bits(ptr+1,0xbabeface);
+	flushFlashBuffer();
 
+	printf("%08lx %08lx\n",ptr[0], ptr[1]);
 	while(1) {
 	}
 }
